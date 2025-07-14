@@ -12,7 +12,8 @@ import SwiftData
 struct ProximalApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Trip.self,
+            Place.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -22,10 +23,15 @@ struct ProximalApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    init() {
+        NotificationManager.shared.requestAuthorization()
+        NotificationManager.shared.registerNotificationCategories()
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TripsListView()
         }
         .modelContainer(sharedModelContainer)
     }

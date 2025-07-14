@@ -29,9 +29,22 @@
 		02FE1E762E23FEF800E5C7B2 /* ProximalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProximalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		02FE1EA02E240EB000E5C7B2 /* Exceptions for "Proximal" folder in "Proximal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 02FE1E5C2E23FEF600E5C7B2 /* Proximal */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		02FE1E5F2E23FEF600E5C7B2 /* Proximal */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				02FE1EA02E240EB000E5C7B2 /* Exceptions for "Proximal" folder in "Proximal" target */,
+			);
 			path = Proximal;
 			sourceTree = "<group>";
 		};
@@ -397,6 +410,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Proximal/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Proximal uses your location in the background to notify you about nearby places of interest, even when the app is closed.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Proximal uses your location to check for nearby places of interest.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -424,6 +441,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Proximal/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Proximal uses your location in the background to notify you about nearby places of interest, even when the app is closed.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Proximal uses your location to check for nearby places of interest.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
