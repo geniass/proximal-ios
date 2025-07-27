@@ -17,29 +17,28 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     var modelContext: ModelContext?
     @Published var isTracking = false
+    @Published var currentLocation: CLLocation?
     
     override private init() {
         super.init()
         locationManager.delegate = self
+        // This allows the app to be woken up from a terminated state for location events.
+        locationManager.allowsBackgroundLocationUpdates = true
     }
     
-    func requestPermissions() {
-        locationManager.requestAlwaysAuthorization()
-    }
-    
-    func startMonitoring() {
-        guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
-            print("Geofencing is not supported on this device.")
-            return
+    func validateAndStartMonitoring() {
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            locationManager.requestAlwaysAuthorization()
+        case .authorizedAlways:
+            locationManager.startUpdatingLocation()
+            isTracking = true
+        default:
+            // Handle cases where permission is denied, restricted, or only for "When In Use".
+            // For this app's functionality, we need "Always" access.
+            isTracking = false
+            print("Location permission is not 'Always'. Tracking cannot start.")
         }
-        
-        if locationManager.authorizationStatus != .authorizedAlways {
-            print("Location permission not granted.")
-            return
-        }
-        
-        locationManager.startUpdatingLocation()
-        isTracking = true
     }
     
     func stopMonitoring() {
@@ -50,8 +49,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         isTracking = false
     }
     
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        validateAndStartMonitoring()
+    }
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
+        self.currentLocation = location
         
         // Stop updating location to save battery
         locationManager.stopUpdatingLocation()

@@ -30,15 +30,6 @@ struct TripsListView: View {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: {
-                        LocationManager.shared.modelContext = modelContext
-                        LocationManager.shared.requestPermissions()
-                        LocationManager.shared.startMonitoring()
-                    }) {
-                        Label("Start Tracking", systemImage: "location.fill")
-                    }
-                }
-                ToolbarItem {
                     Button(action: { isShowingTripForm = true }) {
                         Label("Add Trip", systemImage: "plus")
                     }

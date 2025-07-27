@@ -27,6 +27,11 @@ struct ProximalApp: App {
     init() {
         NotificationManager.shared.requestAuthorization()
         NotificationManager.shared.registerNotificationCategories()
+        
+        // Configure and start the location manager
+        let locationManager = LocationManager.shared
+        locationManager.modelContext = sharedModelContainer.mainContext
+        locationManager.validateAndStartMonitoring()
     }
 
     var body: some Scene {
