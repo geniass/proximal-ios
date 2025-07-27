@@ -37,10 +37,11 @@ class NotificationManager {
     func sendProximityNotification(for place: Place, from location: CLLocation) {
         let placeLocation = CLLocation(latitude: place.latitude, longitude: place.longitude)
         let distance = location.distance(from: placeLocation)
+        let direction = self.direction(from: location.coordinate, to: place.coordinate)
         
         let content = UNMutableNotificationContent()
         content.title = "Nearby Place: \(place.name)"
-        content.body = "You are approximately \(Int(distance)) meters away."
+        content.body = "You are approximately \(Int(distance)) meters away, to the \(direction)."
         content.sound = .default
         content.categoryIdentifier = categoryIdentifier
         
@@ -60,5 +61,35 @@ class NotificationManager {
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         
         UNUserNotificationCenter.current().add(request)
+    }
+    
+    private func direction(from source: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) -> String {
+        let lat1 = source.latitude.toRadians()
+        let lon1 = source.longitude.toRadians()
+
+        let lat2 = destination.latitude.toRadians()
+        let lon2 = destination.longitude.toRadians()
+
+        let dLon = lon2 - lon1
+
+        let y = sin(dLon) * cos(lat2)
+        let x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
+        let radiansBearing = atan2(y, x)
+
+        let degreesBearing = radiansBearing.toDegrees()
+
+        let directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"]
+        let index = Int((degreesBearing + 22.5) / 45.0) & 7
+        return directions[index]
+    }
+}
+
+fileprivate extension Double {
+    func toRadians() -> Double {
+        return self * .pi / 180.0
+    }
+
+    func toDegrees() -> Double {
+        return self * 180.0 / .pi
     }
 }
