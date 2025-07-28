@@ -9,18 +9,26 @@ import Foundation
 import UserNotifications
 import CoreLocation
 
-class NotificationManager {
+class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationManager()
     
     let categoryIdentifier = "PROXIMITY_ALERT"
     
-    private init() {}
+    private override init() {
+        super.init()
+        UNUserNotificationCenter.current().delegate = self
+    }
     
     func requestAuthorization() {
         let options: UNAuthorizationOptions = [.alert, .sound, .badge]
         UNUserNotificationCenter.current().requestAuthorization(options: options) { success, error in
             if let error = error {
-                print("Error: \(error.localizedDescription)")
+                print("Error requesting notification authorization: \(error.localizedDescription)")
+            }
+            if success {
+                print("Notification authorization granted.")
+            } else {
+                print("Notification authorization denied.")
             }
         }
     }
@@ -48,7 +56,18 @@ class NotificationManager {
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest(identifier: place.name, content: content, trigger: trigger)
         
-        UNUserNotificationCenter.current().add(request)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error scheduling notification for \(place.name): \(error.localizedDescription)")
+            } else {
+                print("Successfully scheduled notification for \(place.name).")
+            }
+        }
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Show the notification banner/alert even if the app is in the foreground
+        completionHandler([.banner, .sound, .badge])
     }
     
     func sendTestNotification(message: String) {
