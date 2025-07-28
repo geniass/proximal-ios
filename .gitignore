@@ -1,0 +1,97 @@
+# Xcode
+#
+# gitignore contributors: remember to keep this file platform-agnostic
+# gitignore developers: add platform-specific rules in the appropriate section
+#
+# Created by https://www.toptal.com/developers/gitignore/api/xcode,swift
+# Edit at https://www.toptal.com/developers/gitignore?templates=xcode,swift
+
+### Swift ###
+# Swift Package Manager
+#
+# Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
+# Packages/
+#
+# Add this line if you want to avoid checking in resolved dependencies from Swift Package Manager.
+# *.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+.build/
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+*.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+### Xcode ###
+# Xcode
+#
+# gitignore contributors: remember to keep this file platform-agnostic
+# gitignore developers: add platform-specific rules in the appropriate section
+#
+# Created by https://www.toptal.com/developers/gitignore/api/xcode
+# Edit at https://www.toptal.com/developers/gitignore?templates=xcode
+
+### Xcode Core ###
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+### Xcode Cache ###
+*~.nib/
+*~.xib/
+
+### Xcode Playgrounds ###
+timeline.xctimeline
+playground.xcworkspace
+
+### Xcode Project ###
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/
+xcuserdata/
+
+### Xcode Scheme ###
+*.xcschememanagement.plist
+
+### Backup and Recovered Files ###
+*.sdef~
+*.nib~
+*.xib~
+*~.storyboard
+*~.strings
+*~.plist
+*~.h
+*~.m
+*~.pch
+*~.xcconfig
+*~.swift
+*~.xcdatamodel
+*~.xcdatamodeld
+*~.xcdatamodel/
+*~.xcdatamodeld/
+
+# End of https://www.toptal.com/developers/gitignore/api/xcode,swift
+.DS_Store
+/build
+/DerivedData
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+*.xcodeproj/xcuserdata/
+xcuserdata/
+*.xcworkspace/xcshareddata/
+*.xcworkspace/xcuserdata/
+/Carthage
+/Pods
+*.swp
+*~
+*.orig
+*.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+*.xcodeproj/project.xcworkspace/xcshareddata/xcschemes/
+*.xcodeproj/project.xcworkspace/xcshareddata/xcschemes/
+*.xcodeproj/project.xcworkspace/xcshareddata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/contents.xcworkspacedata
+*.xcworkspace/xcshareddata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
