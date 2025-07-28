@@ -15,15 +15,19 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     static let shared = LocationManager()
     
     private let locationManager = CLLocationManager()
-    var modelContext: ModelContext?
+    // The location manager will hold a reference to the data store.
+    private var dataStore: BackgroundDataStore!
     @Published var isTracking = false
     @Published var currentLocation: CLLocation?
     
     override private init() {
         super.init()
         locationManager.delegate = self
-        // This allows the app to be woken up from a terminated state for location events.
         locationManager.allowsBackgroundLocationUpdates = true
+    }
+    
+    func configure(modelContainer: ModelContainer) {
+        self.dataStore = BackgroundDataStore(modelContainer: modelContainer)
     }
     
     func validateAndStartMonitoring() {
@@ -34,8 +38,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             locationManager.startUpdatingLocation()
             isTracking = true
         default:
-            // Handle cases where permission is denied, restricted, or only for "When In Use".
-            // For this app's functionality, we need "Always" access.
             isTracking = false
             print("Location permission is not 'Always'. Tracking cannot start.")
         }
@@ -49,6 +51,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         isTracking = false
     }
     
+    func resetAllCooldowns() {
+        Task {
+            await dataStore.resetAllCooldowns()
+        }
+    }
+    
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         validateAndStartMonitoring()
     }
@@ -57,10 +65,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         guard let location = locations.last else { return }
         self.currentLocation = location
         
-        // Stop updating location to save battery
         locationManager.stopUpdatingLocation()
         
-        // Create a new geofence
         let region = CLCircularRegion(center: location.coordinate, radius: 200, identifier: "user_geofence")
         region.notifyOnExit = true
         locationManager.startMonitoring(for: region)
@@ -72,37 +78,36 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         print("Exited region: \(region.identifier)")
-        
-        // Get new location and check for nearby places
         locationManager.startUpdatingLocation()
     }
     
     private func checkProximity(to location: CLLocation) {
-        guard let modelContext = modelContext else {
-            print("Model context not available.")
+        // Ensure the data store has been configured.
+        guard dataStore != nil else {
+            print("LocationManager: Data store not configured.")
             return
         }
         
-        do {
-            let fetchDescriptor = FetchDescriptor<Place>(predicate: #Predicate { $0.isActive })
-            let places = try modelContext.fetch(fetchDescriptor)
+        Task.detached(priority: .background) {
+            // Fetch fresh data using the actor's context to ensure consistency.
+            let context = ModelContext(self.dataStore.modelContainer)
+            let descriptor = FetchDescriptor<Place>()
+            guard let places = try? context.fetch(descriptor) else { return }
             
-            for place in places {
+            for place in places where place.isActive {
                 let placeLocation = CLLocation(latitude: place.latitude, longitude: place.longitude)
                 let distance = location.distance(from: placeLocation)
                 
                 if distance <= 500 {
-                    if let lastNotified = place.lastNotified, Date().timeIntervalSince(lastNotified) < 3600 {
-                        // Less than an hour has passed, so don't notify
+                    if let lastNotified = place.lastNotified, Date().timeIntervalSince(lastNotified) < 300 {
                         continue
                     }
                     
-                    place.lastNotified = Date()
+                    // Tell the data store actor to update the official record.
+                    await self.dataStore.updateLastNotified(for: place.persistentModelID)
                     NotificationManager.shared.sendProximityNotification(for: place, from: location)
                 }
             }
-        } catch {
-            print("Failed to fetch places: \(error)")
         }
     }
     

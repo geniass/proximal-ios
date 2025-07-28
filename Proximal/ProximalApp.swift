@@ -10,34 +10,20 @@ import SwiftData
 
 @main
 struct ProximalApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Trip.self,
-            Place.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
     
     init() {
         NotificationManager.shared.requestAuthorization()
         NotificationManager.shared.registerNotificationCategories()
-        
-        // Configure and start the location manager
-        let locationManager = LocationManager.shared
-        locationManager.modelContext = sharedModelContainer.mainContext
-        locationManager.validateAndStartMonitoring()
     }
 
     var body: some Scene {
         WindowGroup {
             TripsListView()
+                .onAppear {
+                    let container = try! ModelContainer(for: Trip.self, Place.self)
+                    LocationManager.shared.configure(modelContainer: container)
+                }
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(for: [Trip.self, Place.self])
     }
 }

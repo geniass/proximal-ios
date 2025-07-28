@@ -34,10 +34,24 @@ struct TripsListView: View {
                         Label("Add Trip", systemImage: "plus")
                     }
                 }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Menu {
+                        Button(action: {
+                            LocationManager.shared.resetAllCooldowns()
+                        }) {
+                            Label("Reset Notification Cooldowns", systemImage: "arrow.clockwise")
+                        }
+                    } label: {
+                        Label("Debug Menu", systemImage: "ladybug")
+                    }
+                }
             }
             .navigationTitle("Trips")
             .sheet(isPresented: $isShowingTripForm) {
                 TripFormView()
+            }
+            .onAppear {
+                LocationManager.shared.validateAndStartMonitoring()
             }
         } detail: {
             Text("Select a trip")
@@ -54,6 +68,7 @@ struct TripsListView: View {
 }
 
 #Preview {
-    TripsListView()
-        .modelContainer(for: Trip.self, inMemory: true)
+    let container = try! ModelContainer(for: Trip.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    return TripsListView()
+        .modelContainer(container)
 }
