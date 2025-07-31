@@ -11,12 +11,22 @@ import MapKit
 
 struct PlacesListView: View {
     let trip: Trip
+    @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var now = Date()
     
     var body: some View {
         List {
             ForEach(trip.places ?? []) { place in
                 HStack {
-                    Text(place.name)
+                    VStack(alignment: .leading) {
+                        Text(place.name)
+                        if let cooldownText = cooldownText(for: place) {
+                            Text(cooldownText)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
                     Spacer()
                     
                     Button(action: {
@@ -34,6 +44,24 @@ struct PlacesListView: View {
                 }
             }
         }
+        .onReceive(timer) { input in
+            now = input
+        }
+    }
+    
+    private func cooldownText(for place: Place) -> String? {
+        guard let lastNotified = place.lastNotified else { return nil }
+        
+        let cooldown: TimeInterval = AppConstants.notificationCooldown // 1 hour
+        let remaining = (lastNotified.addingTimeInterval(cooldown)).timeIntervalSince(now)
+        
+        if remaining > 0 {
+            let minutes = Int(remaining) / 60
+            let seconds = Int(remaining) % 60
+            return "Cooldown: \(String(format: "%02d:%02d", minutes, seconds))"
+        }
+        
+        return nil
     }
     
     private func openInMaps(place: Place) {

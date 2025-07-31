@@ -99,7 +99,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 let distance = location.distance(from: placeLocation)
                 
                 if distance <= 500 {
-                    if let lastNotified = place.lastNotified, Date().timeIntervalSince(lastNotified) < 300 {
+                    if let lastNotified = place.lastNotified, Date().timeIntervalSince(lastNotified) < AppConstants.notificationCooldown {
                         continue
                     }
                     
